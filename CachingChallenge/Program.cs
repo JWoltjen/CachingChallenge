@@ -8,7 +8,6 @@ namespace CachingChallenge
         static void Main(string[] args)
         {
             
-            Console.ReadLine();
         }
     }
 }
