@@ -6,6 +6,9 @@ namespace CachingChallenge
 {
     public class DataAccess
     {
+        private Dictionary<int, PersonModel> personByIdCache = new Dictionary<int, PersonModel>();
+        private Dictionary<string, List<PersonModel>> personByLastNameCache = new Dictionary<string, List<PersonModel>>();
+
         List<PersonModel> _people = new List<PersonModel>
         {
             new PersonModel{ Id = 1, FirstName = "Tim", LastName = "Corey" },
@@ -24,14 +27,33 @@ namespace CachingChallenge
 
         public PersonModel SimulatedPersonById(int id)
         {
+            // if the dictionary contains the key, the id, then return the person from the cache
+            if (personByIdCache.ContainsKey(id))
+            {
+                return personByIdCache[id];
+            }
+            
+            // else access the database
             Console.WriteLine("The database was accessed for an individual lookup");
-            return _people.FirstOrDefault(x => x.Id == id);
+            // we add the results of the search to the cache so that next time the cache will be used instead of the database.
+            var person = _people.FirstOrDefault(x => x.Id == id);
+            personByIdCache[id] = person;
+            return person;
         }
 
         public List<PersonModel> SimulatedPersonListByLastName(string lastName)
         {
+            // if the dictionary contains the key, the string, then return the person from the cache
+            if (personByLastNameCache.ContainsKey(lastName))
+            {
+                return personByLastNameCache[lastName];
+            }
+
+            // else access the database
             Console.WriteLine("The database was accessed for a last name query");
-            return _people.FindAll(x => x.LastName == lastName);
+            var persons = _people.FindAll(x => x.LastName == lastName);
+            personByLastNameCache[lastName] = persons;
+            return persons;
         }
     }
 }
